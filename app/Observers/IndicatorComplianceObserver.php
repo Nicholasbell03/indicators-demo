@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\Models\IndicatorCompliance;
-use App\Traits\DeletesRelatedIndicatorTasks;
+use App\Observers\Traits\DeletesRelatedIndicatorTasks;
 use Illuminate\Support\Str;
 
 class IndicatorComplianceObserver

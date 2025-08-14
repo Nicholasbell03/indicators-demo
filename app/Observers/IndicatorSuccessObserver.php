@@ -5,7 +5,7 @@ namespace App\Observers;
 use App\Enums\UserRoles;
 use App\Models\IndicatorSuccess;
 use App\Models\Role;
-use App\Traits\DeletesRelatedIndicatorTasks;
+use App\Observers\Traits\DeletesRelatedIndicatorTasks;
 use Illuminate\Support\Str;
 
 class IndicatorSuccessObserver

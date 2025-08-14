@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\Models\IndicatorSuccessProgrammeMonth;
-use App\Traits\DeletesRelatedIndicatorTasks;
+use App\Observers\Traits\DeletesRelatedIndicatorTasks;
 
 class IndicatorSuccessProgrammeMonthObserver
 {

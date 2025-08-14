@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\IndicatorController;
 use App\Http\Controllers\OrganisationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,3 +20,6 @@ Route::group(['middleware' => ['policy:viewInFrontend,Organisation']], function 
     Route::get('/inactive', [OrganisationController::class, 'inactive'])->name('inactive');
     Route::get('/set', [OrganisationController::class, 'set'])->name('set');
 });
+
+Route::post('/indicator-submissions', [IndicatorController::class, 'store'])->name('indicator-submissions.store');
+Route::get('/indicator-tasks/{indicatorTask}', [IndicatorController::class, 'show'])->name('indicator-tasks.show');

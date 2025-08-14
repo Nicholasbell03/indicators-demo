@@ -1,0 +1,53 @@
+graph TD
+    subgraph "Indicator Verification Orchestration"
+        %% Service Entry Points
+        A[IndicatorSubmission] --> B[IndicatorVerificationService<br/>processSubmissionForVerification]
+        
+        B --> C{Requires<br/>Verification?}
+        C -->|No| D[Emit: IndicatorTaskCompleted]
+        C -->|Yes| E[Create Level 1 Review Task]
+        
+        E --> F[Emit: IndicatorSubmissionAwaitingVerification]
+        
+        %% Review Process
+        F --> G[Verifier Reviews]
+        G --> H{Decision}
+        
+        %% Approved Flow
+        H -->|Approved| I[IndicatorVerificationService<br/>handleApprovedReview]
+        I --> J{Level 2<br/>Required?}
+        J -->|Yes| K[Create Level 2 Review Task]
+        K --> L[Emit: IndicatorSubmissionAwaitingVerification<br/>Level 2]
+        L --> G
+        
+        J -->|No| M[Emit: IndicatorTaskCompleted]
+        
+        %% Rejected Flow  
+        H -->|Rejected| N[IndicatorVerificationService<br/>handleRejectedReview]
+        N --> O[Emit: IndicatorSubmissionRejected]
+        
+        %% Completion Flow
+        D --> P[IndicatorVerificationService<br/>completeTaskAndSubmission]
+        M --> P
+        P --> Q[Emit: IndicatorSubmissionApproved]
+        
+        %% Events & Listeners Orchestration
+        subgraph "Event Orchestration"
+            R[IndicatorSubmissionSubmitted] --> S[IndicatorSubmissionSubmittedListener]
+            F --> T[IndicatorSubmissionAwaitingVerificationListener]
+            L --> T
+            D --> U[IndicatorTaskCompletedListener]  
+            M --> U
+            Q --> V[IndicatorSubmissionApprovedListener]
+            O --> W[IndicatorSubmissionRejectedListener]
+            X[IndicatorTaskReadyForSubmission] --> Y[IndicatorTaskReadyForSubmissionListener]
+        end
+        
+        %% Role Configuration Source
+        subgraph "Verification Configuration"
+            Z[IndicatorSuccess/IndicatorCompliance]
+            Z --> AA[verifier_1_role_id<br/>verifier_2_role_id]
+            AA --> E
+            AA --> K
+        end
+    end

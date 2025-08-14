@@ -1,0 +1,114 @@
+graph LR
+    subgraph IndicatorsDashboardArchitecture["Indicators Dashboard Architecture"]
+    direction LR
+        %% Frontend Layer
+        subgraph Frontend["Frontend Components"]
+            A[Home.vue - Indicators Tab]
+            B[IndicatorsDashboard.vue]
+            C[IndicatorSection.vue]
+            D[AttendanceCard.vue]
+            E[ElementProgressCard.vue]
+            F[IndicatorsTable.vue]
+            G[IndicatorsSummaryTable.vue]
+            
+            A --> B
+            B --> C
+            B --> D
+            B --> E
+            C --> F
+            C --> G
+        end
+        
+        %% Controller Layer
+        H[OrganisationController]
+        
+        %% Factory Pattern
+        I[IndicatorEntrepreneurDashboardFacadeFactory]
+        J[IndicatorEntrepreneurDashboardFacade]
+        
+        %% Backend Services
+        subgraph Services["Backend Services"]
+            K[IndicatorTaskListingService]
+            L[IndicatorDashboardGridService]
+            M[IndicatorAttendanceStatService]
+            N[IndicatorElementProgressService]
+        end
+        
+        %% Supporting Services
+        subgraph SupportingServices["Supporting Services"]
+            O[ProgrammeSessionAttendanceServiceFactory]
+            P[ProgrammeElementProgressCalculationServiceFactory]
+        end
+        
+        %% Data Models
+        subgraph DataLayer["Data Layer"]
+            Q[(IndicatorTask)]
+            R[(IndicatorSuccess)]
+            S[(IndicatorCompliance)]
+            T[(OrganisationProgrammeSeat)]
+            U[(IndicatorSubmission)]
+            V[(EngaugeSessionProgress)]
+            W[(ElementProgress)]
+        end
+        
+        %% Request Flow (Backend)
+        H -->|creates| I
+        I -->|instantiates| J
+        J -->|coordinates| K
+        J -->|coordinates| L
+        J -->|coordinates| M
+        J -->|coordinates| N
+        
+        %% Service Dependencies
+        M -->|uses| O
+        N -->|uses| P
+        
+        %% Data Access
+        K --> Q
+        K --> R
+        K --> S
+        L --> T
+        L --> Q
+        M --> T
+        M --> V
+        N --> T
+        N --> U
+        N --> W
+        
+        %% Response Flow (Data Back to Frontend)
+        J -->|eager data| H
+        J -->|deferred data| H
+        H -->|Inertia response| A
+        
+        %% Data Types
+        subgraph DataFlow["Data Flow Types"]
+            X[Eager: Indicator Lists<br/>Programme Start Date]
+            Y[Deferred: Dashboard Tables<br/>Attendance Stats<br/>Element Progress]
+        end
+        
+        J --> X
+        J --> Y
+        X --> H
+        Y --> H
+        
+        %% Caching Layer
+        subgraph Cache["Caching Strategy"]
+            Z[5min: Dashboard Grid<br/>Attendance Stats]
+            AA[8hr: Element Progress<br/>Programme Stats]
+        end
+        
+        L -.->|caches| Z
+        M -.->|caches| Z
+        N -.->|caches| AA
+        N -.->|caches| Z
+        
+        %% Error Handling
+        subgraph ErrorHandling["Error Handling"]
+            BB[Fallback Data Structure]
+            CC[Logging & Monitoring]
+        end
+        
+        J -.->|on error| BB
+        Services -.->|logs errors| CC
+        BB --> H
+    end

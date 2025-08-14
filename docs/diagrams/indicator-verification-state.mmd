@@ -1,0 +1,27 @@
+stateDiagram-v2
+  [*] --> Submitted
+  Submitted --> RequiresVerification : Requires verification?
+  RequiresVerification --> AutoComplete : No
+  AutoComplete --> Completed
+  RequiresVerification --> L1_Pending : Yes
+
+  L1_Pending : Awaiting verification (Level 1)
+  L1_Pending --> L1_Approved : Approved
+  L1_Pending --> Rejected : Rejected
+
+  Rejected : Submission rejected
+  Rejected --> Needs_Revision : Needs revision
+  Needs_Revision --> Resubmitted : Resubmit
+  Resubmitted --> Submitted
+
+  L1_Approved --> RequiresLevel2 : Requires Level 2?
+  RequiresLevel2 --> Completed : No
+  RequiresLevel2 --> L2_Pending : Yes
+
+  L2_Pending : Awaiting verification (Level 2)
+  L2_Pending --> L2_Approved : Approved
+  L2_Pending --> Rejected : Rejected
+
+  L2_Approved --> Completed
+  Completed --> [*]
+
